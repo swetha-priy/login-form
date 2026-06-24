@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: none;
+      }
+
+      .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .form-header .icon {
+        width: 56px;
+        height: 56px;
+        background: transparent;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+      }
+
+      .form-header .icon svg {
+        width: 28px;
+        height: 28px;
+        fill: #333;
+      }
+
+      .form-header h1 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 6px;
+      }
+
+      .form-header p {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .field {
+        margin-bottom: 1.1rem;
+      }
+
+      .field label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+      }
+
+      .input-wrap {
+        position: relative;
+      }
+
+      .input-wrap svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        stroke: #9ca3af;
+        fill: none;
+        pointer-events: none;
+      }
+
+      .field input {
+        width: 100%;
+        padding: 11px 14px 11px 40px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1a1a1a;
+        background: #f9fafb;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          background 0.2s;
+      }
+
+      .field input:focus {
+        border-color: #666;
+        box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.1);
+        background: #ffffff;
+      }
+
+      .toggle-pass {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .toggle-pass svg {
+        position: static;
+        transform: none;
+        width: 18px;
+        height: 18px;
+        stroke: #9ca3af;
+        fill: none;
+        transition: stroke 0.2s;
+      }
+
+      .toggle-pass:hover svg {
+        stroke: #666;
+      }
+
+      .error-msg {
+        font-size: 12px;
+        color: #ef4444;
+        margin-top: 4px;
+        display: none;
+      }
+
+      .field.invalid input {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+
+      .field.invalid .error-msg {
+        display: block;
+      }
+
+      .forgot-link {
+        text-align: right;
+        margin-top: -0.6rem;
+        margin-bottom: 1rem;
+      }
+
+      .forgot-link a {
+        font-size: 12px;
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .forgot-link a:hover {
+        text-decoration: underline;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: #f0f0f0;
+        color: #333;
+        border: 1px solid #999;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+        transition:
+          opacity 0.2s,
+          transform 0.1s;
+      }
+
+      .submit-btn:hover {
+        opacity: 0.9;
+      }
+
+      .submit-btn:active {
+        transform: scale(0.98);
+      }
+
+      .success-banner {
+        display: none;
+        background: #f0f0f0;
+        border: 1.5px solid #999;
+        color: #333;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        margin-top: 1rem;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      @media (max-width: 480px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+        .form-card {
+          padding: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-card">
+      <div class="form-header">
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"
+            />
+          </svg>
+        </div>
+        <h1>Create Account</h1>
+        <p>Sign up to get started today</p>
+      </div>
+
+      <!-- Name Row -->
+      <div class="row">
+        <div class="field" id="f-fname">
+          <label for="fname">First Name</label>
+          <div class="input-wrap">
+            <svg
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <input type="text" id="fname" placeholder="Jane" />
+          </div>
+          <div class="error-msg">Enter your first name.</div>
+        </div>
+
+        <div class="field" id="f-lname">
+          <label for="lname">Last Name</label>
+          <div class="input-wrap">
+            <svg
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <input type="text" id="lname" placeholder="Doe" />
+          </div>
+          <div class="error-msg">Enter your last name.</div>
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="field" id="f-username">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <input type="text" id="username" placeholder="username" />
+        </div>
+        <div class="error-msg">Enter a username (min. 3 characters).</div>
+      </div>
+
+      <!-- Email -->
+      <div class="field" id="f-email">
+        <label for="email">Email</label>
+        <div class="input-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          <input type="email" id="email" placeholder="your@email.com" />
+        </div>
+        <div class="error-msg">Enter a valid email address.</div>
+      </div>
+
+      <!-- Password -->
+      <div class="field" id="f-password">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input
+            type="password"
+            id="password"
+            placeholder="Min. 8 characters"
+          />
+          <button
+            class="toggle-pass"
+            type="button"
+            onclick="togglePass('password', this)"
+            aria-label="Show password"
+          >
+            <svg
+              id="eye-password"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <div class="error-msg">Password must be at least 8 characters.</div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="field" id="f-confirm-password">
+        <label for="confirm-password">Confirm Password</label>
+        <div class="input-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input
+            type="password"
+            id="confirm-password"
+            placeholder="Re-enter password"
+          />
+        </div>
+        <div class="error-msg">Passwords do not match.</div>
+      </div>
+
+      <!-- Password Strength -->
+      <div id="password-strength" style="display: none; margin-top: 0.5rem">
+        <small style="color: #666">Password Strength:</small>
+        <div
+          style="
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 4px;
+          "
+        >
+          <div
+            id="strength-bar"
+            style="
+              height: 100%;
+              width: 0%;
+              background: #999;
+              border-radius: 2px;
+              transition:
+                width 0.3s,
+                background 0.3s;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <!-- Terms & Conditions -->
+      <div
+        class="field"
+        id="f-terms"
+        style="
+          display: flex;
+          align-items: center;
+          margin-top: 1.5rem;
+          margin-bottom: 1rem;
+        "
+      >
+        <input
+          type="checkbox"
+          id="terms"
+          style="width: 18px; height: 18px; cursor: pointer; margin-right: 8px"
+        />
+        <label for="terms" style="margin: 0; font-size: 12px; cursor: pointer"
+          >I agree to the Terms & Conditions</label
+        >
+      </div>
+      <div class="error-msg" id="terms-error" style="margin-top: 0.5rem">
+        You must agree to the terms.
+      </div>
+
+      <!-- Forgot Password -->
+      <div class="forgot-link">
+        <a href="#" onclick="forgotPassword(event)">Forgot password?</a>
+      </div>
+
+      <!-- Submit -->
+      <button class="submit-btn" onclick="submitForm()">Create Account</button>
+
+      <div class="success-banner" id="success-banner">
+        🎉 Account created successfully! Welcome aboard.
+      </div>
+    </div>
+
+    <script>
+      function togglePass(id, btn) {
+        const input = document.getElementById(id);
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        const eye = btn.querySelector("svg");
+        eye.innerHTML = isHidden
+          ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a18.9 18.9 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+          : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+
+      function validate(id, check) {
+        const wrap = document.getElementById("f-" + id);
+        const el = document.getElementById(id);
+        const ok = check(el.value.trim());
+        wrap.classList.toggle("invalid", !ok);
+        return ok;
+      }
+
+      function getPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.length >= 12) strength++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+        return strength;
+      }
+
+      function updatePasswordStrength() {
+        const password = document.getElementById("password").value;
+        const strengthBar = document.getElementById("strength-bar");
+        const strengthDisplay = document.getElementById("password-strength");
+
+        if (password.length > 0) {
+          strengthDisplay.style.display = "block";
+          const strength = getPasswordStrength(password);
+          const widths = [0, 20, 40, 60, 80, 100];
+          const colors = [
+            "#999",
+            "#ff6b6b",
+            "#ffa500",
+            "#ffeb3b",
+            "#90ee90",
+            "#4caf50",
+          ];
+          strengthBar.style.width = widths[strength] + "%";
+          strengthBar.style.background = colors[strength];
+        } else {
+          strengthDisplay.style.display = "none";
+        }
+      }
+
+      function submitForm() {
+        const checks = [
+          validate("fname", (v) => v.length > 0),
+          validate("lname", (v) => v.length > 0),
+          validate("username", (v) => v.length >= 3),
+          validate("email", (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)),
+          validate("password", (v) => v.length >= 8),
+          validate(
+            "confirm-password",
+            (v) => v === document.getElementById("password").value,
+          ),
+        ];
+
+        const terms = document.getElementById("terms").checked;
+        const termsError = document.getElementById("terms-error");
+
+        if (!terms) {
+          termsError.style.display = "block";
+        } else {
+          termsError.style.display = "none";
+        }
+
+        if (checks.every(Boolean) && terms) {
+          document.querySelectorAll("input").forEach((el) => (el.value = ""));
+          document.getElementById("terms").checked = false;
+          const banner = document.getElementById("success-banner");
+          banner.style.display = "block";
+          setTimeout(() => (banner.style.display = "none"), 4000);
+        }
+      }
+
+      function forgotPassword(e) {
+        e.preventDefault();
+        alert("A password reset link has been sent to your email.");
+      }
+
+      [
+        "fname",
+        "lname",
+        "username",
+        "email",
+        "password",
+        "confirm-password",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => {
+          const fieldId =
+            id === "confirm-password" ? "f-confirm-password" : "f-" + id;
+          const field = document.getElementById(fieldId);
+          if (field) field.classList.remove("invalid");
+        });
+      });
+
+      document
+        .getElementById("password")
+        .addEventListener("input", updatePasswordStrength);
+    </script>
+  </body>
+</html>
